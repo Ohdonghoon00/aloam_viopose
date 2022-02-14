@@ -11,7 +11,7 @@
 - Ceres
 - PCL
 - Eigen
-- Boost? → timer??
+- Boost → timer??
 
 ## Build
 
