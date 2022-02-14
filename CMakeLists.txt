@@ -9,13 +9,13 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   sensor_msgs
-  std_msgs
-  visualization_msgs
-  roscpp
-  rospy
-  rosbag
-  image_transport
-  cv_bridge
+  # std_msgs
+  # visualization_msgs
+  # roscpp
+  # rospy
+  # rosbag
+  # image_transport
+  # cv_bridge
   tf
 )
 # find_package( Boost REQUIRED COMPONENTS 
@@ -34,7 +34,7 @@ include_directories(
 )
 
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs nav_msgs roscpp rospy std_msgs sensor_msgs visualization_msgs
+  CATKIN_DEPENDS geometry_msgs nav_msgs sensor_msgs
   DEPENDS EIGEN3  
   INCLUDE_DIRS include
 )
