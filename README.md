@@ -29,7 +29,7 @@ source devel/setup.bash
 ```
 roscore
 roslaunch aloam aloam.launch
-roslaunch aloam TestPublishData.launch
+roslaunch aloam PublishData.launch
 ```
 
 ## Data Structure Ex
