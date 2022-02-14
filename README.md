@@ -40,7 +40,7 @@ roslaunch aloam PublishData.launch
     	├─ 00000.bin
     	├─ 00001.bin
     	└─ ...						
-    └─ VIOPoses_lidarframes.txt // VIO pose
+    └─ VIOLidarPoses_lidarframes.txt // VIO pose
 ```
 
 ## Output File
