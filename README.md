@@ -18,7 +18,7 @@
 ```
 mkdir -p catkin/src
 cd catkin/src
-git clone ~~~~
+git clone https://github.com/Ohdonghoon00/aloam_viopose.git
 cd ../..
 catkin_make --only-pkg-with-deps aloam
 source devel/setup.bash
@@ -43,11 +43,17 @@ roslaunch aloam TestPublishData.launch
     └─ VIOPoses_lidarframes.txt // VIO pose
 ```
 
-# Output File
+## Output File
 ```
 Result_DIR
     ├─ aloam_mapping_highfrequency_pose.txt ( fast )
     └─ aloam_mapping_pose.txt // LaserMapping Pose Result ( slow but exact)
 ```
 
-# Data 경로 수정
+## Data 경로 수정
+
+**DATA_DIR**
+- launch 폴더내 PublishData.launch 파일 data_dir value값 수정
+
+**Result_DIR**
+- launch 폴더내 aloam.launch 
