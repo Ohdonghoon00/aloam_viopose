@@ -39,8 +39,8 @@ catkin_package(
   INCLUDE_DIRS include
 )
 
-add_executable(PublishLidarData2 src/PublishLidarData2.cpp)
-target_link_libraries(PublishLidarData2 glog ${catkin_LIBRARIES})
+add_executable(PublishLidarData src/PublishLidarData.cpp)
+target_link_libraries(PublishLidarData glog ${catkin_LIBRARIES})
 
 add_executable(ascanRegistration src/scanRegistration.cpp)
 target_link_libraries(ascanRegistration ${catkin_LIBRARIES} ${PCL_LIBRARIES})

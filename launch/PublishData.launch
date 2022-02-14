@@ -1,7 +1,7 @@
 <launch>
     
 
-    <node name="PublishLidarData2" pkg="aloam" type="PublishLidarData2" output="screen"> 
+    <node name="PublishLidarData" pkg="aloam" type="PublishLidarData" output="screen"> 
         <param name="data_dir" type="string" value="/home/multipleye/Dataset/201014_skt_lobby_day_lidar/" />   <!--replace with your data dir -->
         <param name="publish_delay" type="int" value="1" />                                     <!-- 1 : 10hz , 2: 5hz -->
     </node>

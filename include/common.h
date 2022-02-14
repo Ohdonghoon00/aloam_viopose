@@ -22,7 +22,6 @@ const std::vector<double> lidar2rig_pose{1.5620435019860173, -0.0053776231863533
 std::string LidarFrame = "/camera_init";
 
 sensor_msgs::PointCloud2 ConverToROSmsg(const std::vector<Eigen::Vector3d> &PointCloud);
-visualization_msgs::MarkerArray ConverToROSmsg(const ros::Time &timestamp, const std::string &frameid);
 std::vector<Eigen::Vector3d> ConvertFromROSmsg(const sensor_msgs::PointCloud2ConstPtr &laserCloudMsg);
 Eigen::Matrix4d To44RT(Vector6d rot);
 
@@ -48,7 +47,6 @@ struct LidarData
 struct DataBase
 {
     std::vector<Vector6d> VIOLidarPoses;
-    std::vector<double> VIOtimestamps;
 
     // std::vector<double> SlamKFtimestamps;
     // std::vector<Vector6d> SlamKFPoses;
@@ -56,15 +54,6 @@ struct DataBase
 
     std::vector<Eigen::Matrix3Xd> LidarPoints;
 
-};
-
-struct OdometryData
-{
-    std::map< int, Vector6d > Odometry_WPose;
-    std::map< int, Vector6d > MappingHighFrequency_WPose;
-    std::map< int, Vector6d > Mapping_WPose;
-
-    // Vector6d RelPose(int a, int b){;}
 };
 
 Eigen::Vector3d ToVec3(Eigen::Matrix3d rot)
@@ -286,34 +275,21 @@ std::vector<Eigen::Vector3d> ConvertFromROSmsg(sensor_msgs::PointCloud2 &PointCl
     return points;
 }
 
-visualization_msgs::MarkerArray ConverToROSmsg(const ros::Time &timestamp, const std::string &frameid)
-{
-    visualization_msgs::MarkerArray msg_arr;
-    visualization_msgs::Marker msg;
-    
-    msg.header.stamp = timestamp;
-    msg.header.frame_id = frameid;
-    msg.action = visualization_msgs::Marker::DELETEALL;
-    msg_arr.markers.push_back(msg);
-    
-    return msg_arr;
-}
+// void InputSlamPose(Eigen::Matrix4d RT, double *q, double *t)
+// {
+//     Eigen::Matrix3d r = RT.block<3, 3>(0, 0);
+//     Eigen::Quaterniond qq(r);
 
-void InputSlamPose(Eigen::Matrix4d RT, double *q, double *t)
-{
-    Eigen::Matrix3d r = RT.block<3, 3>(0, 0);
-    Eigen::Quaterniond qq(r);
+//     q[0] = qq.x();
+//     q[1] = qq.y();
+//     q[2] = qq.z();
+//     q[3] = qq.w();
 
-    q[0] = qq.x();
-    q[1] = qq.y();
-    q[2] = qq.z();
-    q[3] = qq.w();
+//     t[0] = RT(0, 3);
+//     t[1] = RT(1, 3);
+//     t[2] = RT(2, 3);
 
-    t[0] = RT(0, 3);
-    t[1] = RT(1, 3);
-    t[2] = RT(2, 3);
-
-}
+// }
 
 float VerticalAngle(Eigen::Vector3d p){
   return atan(p.z() / sqrt(p.x() * p.x() + p.y() * p.y())) * 180 / M_PI;

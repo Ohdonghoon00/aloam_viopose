@@ -10,7 +10,6 @@
 #include <sstream>
 #include <glog/logging.h>
 
-#include <rosbag/bag.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 
@@ -26,11 +25,7 @@ ros::Publisher pubLaserCloud;
 
 using namespace std;
 
-bool publish = true;
-int cnt = 0;
-
-// Extrinsic parameter rig - imu / rig - lidar
-const Eigen::Matrix4d IMUToRig = To44RT(imu2rig_pose);
+// Extrinsic parameter rig - lidar
 const Eigen::Matrix4d LidarToRig = To44RT(lidar2rig_pose);
 
 LidarData lidar_data;
@@ -62,10 +57,9 @@ int ReadVIOdata(const std::string Path, DataBase *db)
 
         Vector6d pos;
         pos << std::stod(values[1]), std::stod(values[2]), std::stod(values[3]), std::stod(values[4]), std::stod(values[5]), std::stod(values[6]);
-        Eigen::Matrix4d Rigpos = To44RT(pos);
-        Eigen::Matrix4d Lidarpos = LidarToRig.inverse() * Rigpos * LidarToRig;
 
-        db->VIOLidarPoses.push_back(To6DOF(Lidarpos));
+
+        db->VIOLidarPoses.push_back(pos);
 
         line_num++;
     }
@@ -163,16 +157,17 @@ int ReadLidardata(const std::string Path, const std::string LidarBinaryPath, Dat
         // Read Binary data file
         int PointNum = 0;
         ifs.read((char*) &PointNum, sizeof(int));
+        
         float Points[PointNum * 3];
-        // std::cout << "Point Num : " << PointNum << std::endl;
         ifs.read((char*) &Points, sizeof(float) * PointNum * 3);
+        
         Eigen::Matrix3Xd Points_(3, PointNum);
-        std::cout << sizeof(Points) << std::endl;
         for(int i = 0; i < PointNum; i++){
-            Points_(0, i) = (double)Points[3 * i];
-            Points_(1, i) = (double)Points[3 * i + 1];
-            Points_(2, i) = (double)Points[3 * i + 2];
+            Points_(0, i) = static_cast<double>(Points[3 * i]);
+            Points_(1, i) = static_cast<double>(Points[3 * i + 1]);
+            Points_(2, i) = static_cast<double>(Points[3 * i + 2]);
         }
+        
         db->LidarPoints.push_back(Points_);
 
         ifs.close();
@@ -187,10 +182,9 @@ int ReadLidardata(const std::string Path, const std::string LidarBinaryPath, Dat
 int main(int argc, char **argv) 
 {
     
-    ros::init(argc, argv, "TestPublishData");
+    ros::init(argc, argv, "PublishData");
     ros::NodeHandle nh("~");
     
-    // ToUndistortionPoints;
     std::string data_dir;
     int publish_delay;
     
@@ -227,7 +221,7 @@ int main(int argc, char **argv)
     ros::Rate r(10.0);
 
 
-    int Publish_cnt(0);
+    int Publish_cnt(0), frame_cnt(0);
     for(size_t i = 0; i < DB.LidarPoints.size(); i++){
         
         std::vector<Eigen::Vector3d> PublishPoints;
@@ -246,8 +240,11 @@ int main(int argc, char **argv)
         Eigen::Vector3d p;
         p << DB.VIOLidarPoses[i][3], DB.VIOLidarPoses[i][4], DB.VIOLidarPoses[i][5];            
 
-        std::cout << "Publish !!  Publish num is : " << Publish_cnt << std::endl;
         
+
+        if(frame_cnt % 10 == 0){
+        std::cout << "Publish !!  Publish num is : " << Publish_cnt << std::endl;
+
         // publish pointcloud
         sensor_msgs::PointCloud2 output;
         output = ConverToROSmsg(PublishPoints);
@@ -257,7 +254,6 @@ int main(int argc, char **argv)
 
 
         // publish odometry
-        // std::cout << "Publish!" << std::endl;
         nav_msgs::Odometry VIOodometry;
         VIOodometry.header.frame_id = LidarFrame;
         VIOodometry.child_frame_id = "/laser_odom";
@@ -280,7 +276,9 @@ int main(int argc, char **argv)
         pubVIOPath.publish(VIOPath);
 
         Publish_cnt++;
+        }
         
+        frame_cnt++;
         if(!ros::ok()) break;
         r.sleep();
     }

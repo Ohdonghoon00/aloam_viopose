@@ -231,11 +231,15 @@ void laserOdometryHandler(const nav_msgs::Odometry::ConstPtr &laserOdometry)
 	// std::cout << t_w_curr.x() << "	" << t_w_curr.y() << "	" << t_w_curr.z() << std::endl;
 	double CurrTimestamp_high = laserOdometry->header.stamp.toSec();
 	std::cout << " TimeStamp : " << std::setprecision(19) << CurrTimestamp_high << std::endl;
-	if(OdometryCnt > 0){
-		Vector6d relpose = RelativePose(MappingHighFrequency_WPose, OdometryCnt-1, OdometryCnt);
-		MappingHFPoseFile << std::setprecision(19) << LastTimestamp_high << " " << CurrTimestamp_high << " " << std::setprecision(7) << relpose[0] << " " << relpose[1] << " " << relpose[2] << " "
-                                << relpose[3] << " " << relpose[4] << " " << relpose[5] << std::endl;
-	}
+	// if(OdometryCnt > 0){
+	// 	Vector6d relpose = RelativePose(MappingHighFrequency_WPose, OdometryCnt-1, OdometryCnt);
+	// 	MappingHFPoseFile << std::setprecision(19) << LastTimestamp_high << " " << CurrTimestamp_high << " " << std::setprecision(7) << relpose[0] << " " << relpose[1] << " " << relpose[2] << " "
+    //                             << relpose[3] << " " << relpose[4] << " " << relpose[5] << std::endl;
+	// }
+
+	// Save Pose
+	MappingHFPoseFile << CurrPose[0] << " " << CurrPose[1] << " " << CurrPose[2] << " " << CurrPose[3] << " " << CurrPose[4] << " " << CurrPose[5] << std::endl; 
+
 	nav_msgs::Odometry odomAftMapped;
 	odomAftMapped.header.frame_id = "/camera_init";
 	odomAftMapped.child_frame_id = "/aft_mapped";
@@ -936,12 +940,15 @@ void process()
 			Vector6d CurrPose = To6DOF(q_w_curr, t_w_curr);
     		Mapping_WPose[frameCount] = CurrPose;
 			double CurrTimestamp_mapping = odomAftMapped.header.stamp.toSec();
-			if(frameCount > 0){
-				Vector6d relpose = RelativePose(Mapping_WPose, frameCount-1, frameCount);
-				MappingPoseFile << std::setprecision(19) << LastTimestamp_mapping << " " << CurrTimestamp_mapping << " " << std::setprecision(7) << relpose[0] << " " << relpose[1] << " " << relpose[2] << " "
-                                << relpose[3] << " " << relpose[4] << " " << relpose[5] << std::endl; 
-			}
+			// if(frameCount > 0){
+			// 	Vector6d relpose = RelativePose(Mapping_WPose, frameCount-1, frameCount);
+			// 	MappingPoseFile << std::setprecision(19) << LastTimestamp_mapping << " " << CurrTimestamp_mapping << " " << std::setprecision(7) << relpose[0] << " " << relpose[1] << " " << relpose[2] << " "
+            //                     << relpose[3] << " " << relpose[4] << " " << relpose[5] << std::endl; 
+			// }
 			
+			// Save Pose
+			MappingPoseFile << CurrPose[0] << " " << CurrPose[1] << " " << CurrPose[2] << " " << CurrPose[3] << " " << CurrPose[4] << " " << CurrPose[5] << std::endl;
+
 			std::cout << "Mapping W-Curr Result " << std::endl;
 			std::cout << " Timestamp : " << std::setprecision(19) << CurrTimestamp_mapping << std::endl; 
             std::cout << t_w_curr.x() << "	" << t_w_curr.y() << "	" << t_w_curr.z() << std::endl;
@@ -968,8 +975,11 @@ int main(int argc, char **argv)
 	downSizeFilterCorner.setLeafSize(lineRes, lineRes,lineRes);
 	downSizeFilterSurf.setLeafSize(planeRes, planeRes, planeRes);
 
-	MappingHFPoseFile.open("/home/multipleye/aloam_mapping_highfrequency_RelativePose.txt");
-	MappingPoseFile.open("/home/multipleye/aloam_mapping_RelativePose.txt");
+	std::string result_dir1, result_dir2;
+	nh.getParam("result_dir1", result_dir1);
+	nh.getParam("result_dir2", result_dir2);
+	MappingHFPoseFile.open(result_dir1);
+	MappingPoseFile.open(result_dir2);
 
 	ros::Subscriber subLaserCloudCornerLast = nh.subscribe<sensor_msgs::PointCloud2>("/laser_cloud_corner_last", 100, laserCloudCornerLastHandler);
 
