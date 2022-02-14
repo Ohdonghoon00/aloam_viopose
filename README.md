@@ -32,4 +32,22 @@ roslaunch aloam aloam.launch
 roslaunch aloam TestPublishData.launch
 ```
 
-## Data경로 수정
+## Data Structure Ex
+```
+ DATA_DIR
+    ├─ lidar_timestamp.csv // lidar timestamp and fidx			
+    ├─ lidar2	// Undistortion lidar points
+    	├─ 00000.bin
+    	├─ 00001.bin
+    	└─ ...						
+    └─ VIOPoses_lidarframes.txt // VIO pose
+```
+
+# Output File
+```
+Result_DIR
+    ├─ aloam_mapping_highfrequency_pose.txt ( fast )
+    └─ aloam_mapping_pose.txt // LaserMapping Pose Result ( slow but exact)
+```
+
+# Data 경로 수정
