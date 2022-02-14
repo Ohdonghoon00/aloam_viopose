@@ -56,4 +56,4 @@ Result_DIR
 - launch 폴더내 PublishData.launch 파일 data_dir value값 수정
 
 **Result_DIR**
-- launch 폴더내 aloam.launch 
+- launch 폴더내 aloam.launch 파일 result_dir value
