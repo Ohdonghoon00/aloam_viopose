@@ -200,7 +200,7 @@ int main(int argc, char **argv)
     
     ///////////// VIO pose data /////////////
     std::cout << " Load VIO Data ... " << std::endl;
-    std::string VIOPoses_lidarframes = data_dir + "VIOPoses_lidarframes.txt";
+    std::string VIOPoses_lidarframes = data_dir + "VIOLidarPoses_lidarframes.txt";
 
     ReadVIOdata(VIOPoses_lidarframes, &DB);
 
